@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CrmSolution.Client.MobileApp.View.CustomersView"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="http://prismlibrary.com"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:CrmSolution.Shared.Dto;assembly=CrmSolution.Client.Dto"
+    xmlns:state="clr-namespace:Xamarin.Forms.StateSquid;assembly=Xamarin.Forms.StateSquid"
+    xmlns:system="clr-namespace:System;assembly=netstandard"
+    xmlns:vm="clr-namespace:CrmSolution.Client.MobileApp.ViewModel"
+    x:Name="Customers"
+    Title="Customers List"
+    x:DataType="{x:Type vm:CustomersViewModel}"
+    mc:Ignorable="d">
+
+    <StackLayout
+        Padding="0,0,0,0"
+        state:StateLayout.CurrentState="{Binding CurrentState}"
+        HorizontalOptions="Center"
+        VerticalOptions="Start">
+
+        <state:StateLayout.StateViews>
+            <state:StateView RepeatCount="10" StateKey="Loading">
+                <state:StateView.RepeatTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="0.5*, 3*, *">
+                            <state:SkeletonView
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                BackgroundColor="#cccccc"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center" />
+                            <state:SkeletonView
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                BackgroundColor="#cccccc"
+                                VerticalOptions="Center" />
+                            <state:SkeletonView
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Margin="2,10,10,10"
+                                BackgroundColor="#cccccc"
+                                CornerRadius="2" />
+                        </Grid>
+                    </DataTemplate>
+                </state:StateView.RepeatTemplate>
+            </state:StateView>
+        </state:StateLayout.StateViews>
+
+        <Grid>
+            <BoxView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
+            <SearchBar
+                x:Name="SearchBar"
+                Grid.Row="0"
+                CancelButtonColor="#FFFFFF"
+                FontSize="Medium"
+                HeightRequest="100"
+                Placeholder="search"
+                PlaceholderColor="DarkGray"
+                Text="{Binding SearchText}"
+                TextColor="DarkSlateGray"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <CollectionView
+            ItemsSource="{Binding CustomersView}"
+            SelectedItem="{Binding SelectedCustomer}"
+            SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:CustomerDto">
+                    <StackLayout>
+                        <Grid ColumnDefinitions="0.5*, 3*, *">
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                FontSize="Medium"
+                                HorizontalOptions="Center"
+                                Text="{Binding Id}"
+                                VerticalOptions="Center" />
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                FontSize="Medium"
+                                VerticalOptions="Center">
+                                <Label.Text>
+                                    <MultiBinding StringFormat="{}{0} {1}">
+                                        <Binding Path="FirstName" />
+                                        <Binding Path="LastName" />
+                                    </MultiBinding>
+                                </Label.Text>
+                            </Label>
+
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Margin="2,10,10,10"
+                                BackgroundColor="Red"
+                                Command="{Binding BindingContext.DeleteCustomerCommand, Source={x:Reference Customers}}"
+                                CommandParameter="{Binding .}"
+                                Text="Delete"
+                                TextColor="White" />
+                        </Grid>
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.GoToEditCustomerCommand, Source={x:Reference Customers}}" CommandParameter="{Binding .}" />
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button
+            Margin="10"
+            BackgroundColor="Green"
+            Command="{Binding GoToAddCustomerCommand}"
+            Text="Add New Customer"
+            TextColor="White" />
+    </StackLayout>
+
+
+</ContentPage>
